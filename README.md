@@ -1,6 +1,6 @@
 # Luzifer / envrun
 
-`envrun` is a small helper utility I wrote for myself to debug programs and scripts during their development expecting environment variables to be set to special values. Sure there is [gin]() for go webservers doing the same but I wanted something also for commandline utilities.
+`envrun` is a small helper utility I wrote for myself to debug programs and scripts during their development expecting environment variables to be set to special values. Sure there is [gin](https://github.com/codegangsta/gin) for go webservers doing the same but I wanted something also for commandline utilities.
 
 It reads a `.env` file (configurable) from the current directory and then either takes its own environment variables or a clean set and adds the env variables found in `.env` to it. The resulting set is passed to the command you put as arguments to `envrun`.
 
