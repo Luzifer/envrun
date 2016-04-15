@@ -32,7 +32,7 @@ func infoLog(message string, args ...interface{}) {
 func envListToMap(list []string) map[string]string {
 	out := map[string]string{}
 	for _, entry := range list {
-		if len(entry) == 0 {
+		if len(entry) == 0 || entry[0] == '#' {
 			continue
 		}
 
