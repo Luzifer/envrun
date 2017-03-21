@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
+	openssl "github.com/Luzifer/go-openssl"
 	"github.com/Luzifer/rconfig"
 )
 
@@ -16,6 +17,7 @@ var (
 		EnvFile  string `flag:"env-file" default:".env" description:"Location of the environment file"`
 		Silent   bool   `flag:"q" default:"false" description:"Suppress informational messages from envrun"`
 		CleanEnv bool   `flag:"clean" default:"false" description:"Do not pass current environment to child process"`
+		Password string `flag:"password,p" default:"" env:"PASSWORD" description:"Password to decrypt environment file"`
 	}{}
 )
 
@@ -54,6 +56,12 @@ func main() {
 	body, err := ioutil.ReadFile(cfg.EnvFile)
 	if err != nil {
 		log.Fatalf("Could not read env-file: %s", err)
+	}
+
+	if cfg.Password != "" {
+		if body, err = openssl.New().DecryptString(cfg.Password, string(body)); err != nil {
+			log.Fatalf("Could not decrypt env-file: %s", err)
+		}
 	}
 
 	var childenv map[string]string
