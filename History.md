@@ -1,3 +1,8 @@
+# 0.3.1 / 2017-03-21
+
+  * Add Github publishing
+  * Vendor dependencies
+
 # 0.3.0 / 2017-03-21
 
   * Add support for encrypted env files
