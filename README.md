@@ -45,3 +45,18 @@ __CF_USER_TEXT_ENCODING = 0x1F5:0x0:0x0
 ANOTHER_VAR = foo
 MY_TEST_VAR = hello world
 ```
+
+## Encrypted `.env`-file
+
+In case you don't want to put the environment variables into a plain text file onto your disk you can use an AES256 encrypted file and provide a password to `envrun`:
+
+```bash
+# echo 'MYVAR=myvalue' | openssl enc -e -aes-256-cbc -pass pass:justatest -base64 -out .env
+
+# cat .env
+U2FsdGVkX18xcVIMejjwWzh1DppzptJCHhORH/JDj10=
+
+# envrun -p justatest --clean -- env
+MYVAR=myvalue
+2017/03/21 16:34:57 Process exitted with code 0
+```
