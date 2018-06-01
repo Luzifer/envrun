@@ -60,6 +60,26 @@ MY_TEST_VAR = hello world
 
 In case you don't want to put the environment variables into a plain text file onto your disk you can use an encrypted file and provide a password to `envrun`:
 
+### GnuPG symmetric encryption
+
+In this example an armored (`-a`) encryption is used. This is not required and you can leave out the `-a` flag.
+
+```console
+$ echo "MYVAR=myvalue" | gpg --passphrase justatest --batch --quiet --yes -c -a -o .env
+
+$ cat .env
+-----BEGIN PGP MESSAGE-----
+
+jA0ECQMCIsGVKNlJw1Py0kMB542XJvekKyuPi2LHQrnFlhD5ALm6orvE3WFAzp7D
+kAisTMr10fmjLuENfQhxqd9MB0Kd2mfd3b1mgOzei5IMDLJc
+=7k9M
+-----END PGP MESSAGE-----
+
+$ envrun -p justatest --encryption gpg-symmetric --clean -- env
+MYVAR=myvalue
+INFO[0000] Process exitted with code 0
+```
+
 ### OpenSSL AES256 encryption
 
 Pay attention on the `-md md5` flag: OpenSSL 1.1.0f and newer uses an incompatible hasing algorithm for the passwords!
