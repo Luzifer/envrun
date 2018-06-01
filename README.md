@@ -33,7 +33,7 @@ $ python test.py | grep MY_TEST_VAR
 $ envrun --help
 Usage of envrun:
       --clean                  Do not pass current environment to child process
-      --encryption string      Encryption method used for encrypted env-file (Available: openssl-md5) (default "openssl-md5")
+      --encryption string      Encryption method used for encrypted env-file (Available: gpg-symmetric, openssl-md5) (default "openssl-md5")
       --env-file string        Location of the environment file (default ".env")
       --log-level string       Log level (debug, info, warn, error, fatal) (default "info")
   -p, --password string        Password to decrypt environment file
