@@ -22,15 +22,15 @@ for k in os.environ.keys():
 
 It just prints the current environment to `STDOUT` and exits.
 
-```bash
-# cat .env
+```console
+$ cat .env
 MY_TEST_VAR=hello world
 ANOTHER_VAR=foo
 
-# python test.py | grep MY_TEST_VAR
+$ python test.py | grep MY_TEST_VAR
 ## No output on this command
 
-# envrun --help
+$ envrun --help
 Usage of envrun:
       --clean                  Do not pass current environment to child process
       --encryption string      Encryption method used for encrypted env-file (Available: openssl-md5) (default "openssl-md5")
@@ -41,16 +41,16 @@ Usage of envrun:
       --q                      Suppress informational messages from envrun (DEPRECATED, use --log-level=warn)
       --version                Prints current version and exits
 
-# envrun python test.py | grep MY_TEST_VAR
+$ envrun python test.py | grep MY_TEST_VAR
 MY_TEST_VAR = hello world
 
-# envrun python test.py | wc -l
+$ envrun python test.py | wc -l
       45
 
-# envrun --clean python test.py | wc -l
+$ envrun --clean python test.py | wc -l
        3
 
-# envrun --clean python test.py
+$ envrun --clean python test.py
 __CF_USER_TEXT_ENCODING = 0x1F5:0x0:0x0
 ANOTHER_VAR = foo
 MY_TEST_VAR = hello world
@@ -64,13 +64,13 @@ In case you don't want to put the environment variables into a plain text file o
 
 Pay attention on the `-md md5` flag: OpenSSL 1.1.0f and newer uses an incompatible hasing algorithm for the passwords!
 
-```bash
-# echo 'MYVAR=myvalue' | openssl enc -e -aes-256-cbc -pass pass:justatest -md md5 -base64 -out .env
+```console
+$ echo 'MYVAR=myvalue' | openssl enc -e -aes-256-cbc -pass pass:justatest -md md5 -base64 -out .env
 
-# cat .env
+$ cat .env
 U2FsdGVkX18xcVIMejjwWzh1DppzptJCHhORH/JDj10=
 
-# envrun -p justatest --clean -- env
+$ envrun -p justatest --clean -- env
 MYVAR=myvalue
 2017/03/21 16:34:57 Process exitted with code 0
 ```
