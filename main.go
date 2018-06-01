@@ -19,6 +19,7 @@ var (
 		CleanEnv       bool   `flag:"clean" default:"false" description:"Do not pass current environment to child process"`
 		LogLevel       string `flag:"log-level" default:"info" description:"Log level (debug, info, warn, error, fatal)"`
 		Password       string `flag:"password,p" default:"" env:"PASSWORD" description:"Password to decrypt environment file"`
+		PasswordFile   string `flag:"password-file" default:"" description:"Read encryption key from file"`
 		VersionAndExit bool   `flag:"version" default:"false" description:"Prints current version and exits"`
 	}{}
 
@@ -74,17 +75,25 @@ func main() {
 		log.WithError(err).Fatal("Could not read env-file")
 	}
 
+	if cfg.Password == "" && cfg.PasswordFile != "" {
+		if _, err := os.Stat(cfg.PasswordFile); err == nil {
+			data, err := ioutil.ReadFile(cfg.PasswordFile)
+			if err != nil {
+				log.WithError(err).Fatal("Unable to read password from file")
+			}
+			cfg.Password = string(data)
+		}
+	}
+
 	if cfg.Password != "" {
 		if body, err = openssl.New().DecryptString(cfg.Password, string(body)); err != nil {
 			log.WithError(err).Fatal("Could not decrypt env-file")
 		}
 	}
 
-	var childenv map[string]string
+	var childenv = envListToMap(os.Environ())
 	if cfg.CleanEnv {
 		childenv = map[string]string{}
-	} else {
-		childenv = envListToMap(os.Environ())
 	}
 
 	pairs := envListToMap(strings.Split(string(body), "\n"))
