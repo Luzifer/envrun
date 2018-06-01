@@ -7,20 +7,20 @@ import (
 	"os/exec"
 	"strings"
 
-	openssl "github.com/Luzifer/go-openssl"
 	"github.com/Luzifer/rconfig"
 	log "github.com/sirupsen/logrus"
 )
 
 var (
 	cfg = struct {
-		EnvFile        string `flag:"env-file" default:".env" description:"Location of the environment file"`
-		Silent         bool   `flag:"q" default:"false" description:"Suppress informational messages from envrun (DEPRECATED, use --log-level=warn)"`
-		CleanEnv       bool   `flag:"clean" default:"false" description:"Do not pass current environment to child process"`
-		LogLevel       string `flag:"log-level" default:"info" description:"Log level (debug, info, warn, error, fatal)"`
-		Password       string `flag:"password,p" default:"" env:"PASSWORD" description:"Password to decrypt environment file"`
-		PasswordFile   string `flag:"password-file" default:"" description:"Read encryption key from file"`
-		VersionAndExit bool   `flag:"version" default:"false" description:"Prints current version and exits"`
+		CleanEnv         bool   `flag:"clean" default:"false" description:"Do not pass current environment to child process"`
+		EncryptionMethod string `flag:"encryption" default:"openssl-md5" description:"Encryption method used for encrypted env-file (Available: openssl-md5)"`
+		EnvFile          string `flag:"env-file" default:".env" description:"Location of the environment file"`
+		LogLevel         string `flag:"log-level" default:"info" description:"Log level (debug, info, warn, error, fatal)"`
+		PasswordFile     string `flag:"password-file" default:"" description:"Read encryption key from file"`
+		Password         string `flag:"password,p" default:"" env:"PASSWORD" description:"Password to decrypt environment file"`
+		Silent           bool   `flag:"q" default:"false" description:"Suppress informational messages from envrun (DEPRECATED, use --log-level=warn)"`
+		VersionAndExit   bool   `flag:"version" default:"false" description:"Prints current version and exits"`
 	}{}
 
 	version = "dev"
@@ -70,11 +70,6 @@ func envMapToList(envMap map[string]string) []string {
 }
 
 func main() {
-	body, err := ioutil.ReadFile(cfg.EnvFile)
-	if err != nil {
-		log.WithError(err).Fatal("Could not read env-file")
-	}
-
 	if cfg.Password == "" && cfg.PasswordFile != "" {
 		if _, err := os.Stat(cfg.PasswordFile); err == nil {
 			data, err := ioutil.ReadFile(cfg.PasswordFile)
@@ -85,10 +80,14 @@ func main() {
 		}
 	}
 
-	if cfg.Password != "" {
-		if body, err = openssl.New().DecryptString(cfg.Password, string(body)); err != nil {
-			log.WithError(err).Fatal("Could not decrypt env-file")
-		}
+	dec, err := decryptMethodFromName(cfg.EncryptionMethod)
+	if err != nil {
+		log.WithError(err).Fatal("Could not load decrypt method")
+	}
+
+	pairs, err := loadEnvFromFile(cfg.EnvFile, cfg.Password, dec)
+	if err != nil {
+		log.WithError(err).Fatal("Could not load env file")
 	}
 
 	var childenv = envListToMap(os.Environ())
@@ -96,7 +95,6 @@ func main() {
 		childenv = map[string]string{}
 	}
 
-	pairs := envListToMap(strings.Split(string(body), "\n"))
 	for k, v := range pairs {
 		childenv[k] = v
 	}
@@ -120,4 +118,19 @@ func main() {
 		log.WithError(err).Error("An unknown error ocurred")
 		os.Exit(2)
 	}
+}
+
+func loadEnvFromFile(filename, passphrase string, decrypt decryptMethod) (map[string]string, error) {
+	body, err := ioutil.ReadFile(cfg.EnvFile)
+	if err != nil {
+		return nil, fmt.Errorf("Could not read env-file: %s", err)
+	}
+
+	if passphrase != "" {
+		if body, err = decrypt(body, passphrase); err != nil {
+			return nil, fmt.Errorf("Could not decrypt env-file: %s", err)
+		}
+	}
+
+	return envListToMap(strings.Split(string(body), "\n")), nil
 }
