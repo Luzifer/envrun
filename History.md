@@ -1,3 +1,7 @@
+# 0.4.2 / 2018-06-01
+
+  * Fix: Report gpg-symmetric encryption in help
+
 # 0.4.1 / 2018-06-01
 
   * Fix: Infinite loop on wrong password
