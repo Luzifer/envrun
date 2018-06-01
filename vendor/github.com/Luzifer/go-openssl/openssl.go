@@ -1,4 +1,4 @@
-package openssl
+package openssl // import "github.com/Luzifer/go-openssl"
 
 import (
 	"bytes"
