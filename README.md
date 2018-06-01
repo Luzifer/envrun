@@ -1,3 +1,8 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/Luzifer/envrun)](https://goreportcard.com/report/github.com/Luzifer/envrun)
+![](https://badges.fyi/github/license/Luzifer/envrun)
+![](https://badges.fyi/github/downloads/Luzifer/envrun)
+![](https://badges.fyi/github/latest-release/Luzifer/envrun)
+
 # Luzifer / envrun
 
 `envrun` is a small helper utility I wrote for myself to debug programs and scripts during their development expecting environment variables to be set to special values. Sure there is [gin](https://github.com/codegangsta/gin) for go webservers doing the same but I wanted something also for commandline utilities.
@@ -27,9 +32,14 @@ ANOTHER_VAR=foo
 
 # envrun --help
 Usage of envrun:
-      --clean[=false]: Do not pass current environment to child process
-      --env-file=".env": Location of the environment file
-      --q[=false]: Suppress informational messages from envrun
+      --clean                  Do not pass current environment to child process
+      --encryption string      Encryption method used for encrypted env-file (Available: openssl-md5) (default "openssl-md5")
+      --env-file string        Location of the environment file (default ".env")
+      --log-level string       Log level (debug, info, warn, error, fatal) (default "info")
+  -p, --password string        Password to decrypt environment file
+      --password-file string   Read encryption key from file
+      --q                      Suppress informational messages from envrun (DEPRECATED, use --log-level=warn)
+      --version                Prints current version and exits
 
 # envrun python test.py | grep MY_TEST_VAR
 MY_TEST_VAR = hello world
@@ -48,10 +58,14 @@ MY_TEST_VAR = hello world
 
 ## Encrypted `.env`-file
 
-In case you don't want to put the environment variables into a plain text file onto your disk you can use an AES256 encrypted file and provide a password to `envrun`:
+In case you don't want to put the environment variables into a plain text file onto your disk you can use an encrypted file and provide a password to `envrun`:
+
+### OpenSSL AES256 encryption
+
+Pay attention on the `-md md5` flag: OpenSSL 1.1.0f and newer uses an incompatible hasing algorithm for the passwords!
 
 ```bash
-# echo 'MYVAR=myvalue' | openssl enc -e -aes-256-cbc -pass pass:justatest -base64 -out .env
+# echo 'MYVAR=myvalue' | openssl enc -e -aes-256-cbc -pass pass:justatest -md md5 -base64 -out .env
 
 # cat .env
 U2FsdGVkX18xcVIMejjwWzh1DppzptJCHhORH/JDj10=
