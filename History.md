@@ -1,3 +1,10 @@
+# 0.4.0 / 2018-06-01
+
+  * Add support for symmetric GPG encryption
+  * Allow reading passphrase from file
+  * Rework logging
+  * Migrate to `dep` for vendoring
+
 # 0.3.1 / 2017-03-21
 
   * Add Github publishing
