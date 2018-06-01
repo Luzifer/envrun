@@ -40,7 +40,13 @@ func decryptGPGSymmetric(body []byte, passphrase string) ([]byte, error) {
 		return nil, fmt.Errorf("Unable to read armor: %s", err)
 	}
 
+	var passwordRetry bool
 	md, err := openpgp.ReadMessage(msgReader, nil, func(keys []openpgp.Key, symmetric bool) ([]byte, error) {
+		if passwordRetry {
+			return nil, fmt.Errorf("Wrong passphrase supplied")
+		}
+
+		passwordRetry = true
 		return []byte(passphrase), nil
 	}, nil)
 	if err != nil {
