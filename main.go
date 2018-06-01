@@ -1,33 +1,49 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
 
 	openssl "github.com/Luzifer/go-openssl"
 	"github.com/Luzifer/rconfig"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
-	version = "dev"
-	cfg     = struct {
-		EnvFile  string `flag:"env-file" default:".env" description:"Location of the environment file"`
-		Silent   bool   `flag:"q" default:"false" description:"Suppress informational messages from envrun"`
-		CleanEnv bool   `flag:"clean" default:"false" description:"Do not pass current environment to child process"`
-		Password string `flag:"password,p" default:"" env:"PASSWORD" description:"Password to decrypt environment file"`
+	cfg = struct {
+		EnvFile        string `flag:"env-file" default:".env" description:"Location of the environment file"`
+		Silent         bool   `flag:"q" default:"false" description:"Suppress informational messages from envrun (DEPRECATED, use --log-level=warn)"`
+		CleanEnv       bool   `flag:"clean" default:"false" description:"Do not pass current environment to child process"`
+		LogLevel       string `flag:"log-level" default:"info" description:"Log level (debug, info, warn, error, fatal)"`
+		Password       string `flag:"password,p" default:"" env:"PASSWORD" description:"Password to decrypt environment file"`
+		VersionAndExit bool   `flag:"version" default:"false" description:"Prints current version and exits"`
 	}{}
+
+	version = "dev"
 )
 
 func init() {
-	rconfig.Parse(&cfg)
-}
+	if err := rconfig.ParseAndValidate(&cfg); err != nil {
+		log.Fatalf("Unable to parse commandline options: %s", err)
+	}
 
-func infoLog(message string, args ...interface{}) {
-	if !cfg.Silent {
-		log.Printf(message, args...)
+	if cfg.VersionAndExit {
+		fmt.Printf("envrun %s\n", version)
+		os.Exit(0)
+	}
+
+	if cfg.Silent && cfg.LogLevel == "info" {
+		// Migration of deprecated flag
+		cfg.LogLevel = "warn"
+	}
+
+	if l, err := log.ParseLevel(cfg.LogLevel); err != nil {
+		log.WithError(err).Fatal("Unable to parse log level")
+	} else {
+		log.SetLevel(l)
 	}
 }
 
@@ -55,12 +71,12 @@ func envMapToList(envMap map[string]string) []string {
 func main() {
 	body, err := ioutil.ReadFile(cfg.EnvFile)
 	if err != nil {
-		log.Fatalf("Could not read env-file: %s", err)
+		log.WithError(err).Fatal("Could not read env-file")
 	}
 
 	if cfg.Password != "" {
 		if body, err = openssl.New().DecryptString(cfg.Password, string(body)); err != nil {
-			log.Fatalf("Could not decrypt env-file: %s", err)
+			log.WithError(err).Fatal("Could not decrypt env-file")
 		}
 	}
 
@@ -86,13 +102,13 @@ func main() {
 
 	switch err.(type) {
 	case nil:
-		infoLog("Process exitted with code 0")
+		log.Info("Process exitted with code 0")
 		os.Exit(0)
 	case *exec.ExitError:
-		infoLog("Unclean exit with exit-code != 0")
+		log.Error("Unclean exit with exit-code != 0")
 		os.Exit(1)
 	default:
-		log.Printf("An unknown error ocurred: %s", err)
+		log.WithError(err).Error("An unknown error ocurred")
 		os.Exit(2)
 	}
 }
