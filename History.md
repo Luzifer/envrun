@@ -1,3 +1,8 @@
+# 0.4.1 / 2018-06-01
+
+  * Fix: Infinite loop on wrong password
+  * Fix: All methods do not allow trailing spaces, remove them
+
 # 0.4.0 / 2018-06-01
 
   * Add support for symmetric GPG encryption
