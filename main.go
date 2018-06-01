@@ -115,13 +115,13 @@ func main() {
 		log.Error("Unclean exit with exit-code != 0")
 		os.Exit(1)
 	default:
-		log.WithError(err).Error("An unknown error ocurred")
+		log.WithError(err).Error("An unknown error occurred")
 		os.Exit(2)
 	}
 }
 
 func loadEnvFromFile(filename, passphrase string, decrypt decryptMethod) (map[string]string, error) {
-	body, err := ioutil.ReadFile(cfg.EnvFile)
+	body, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("Could not read env-file: %s", err)
 	}
