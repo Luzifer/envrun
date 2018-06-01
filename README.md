@@ -92,5 +92,5 @@ U2FsdGVkX18xcVIMejjwWzh1DppzptJCHhORH/JDj10=
 
 $ envrun -p justatest --clean -- env
 MYVAR=myvalue
-2017/03/21 16:34:57 Process exitted with code 0
+INFO[0000] Process exitted with code 0
 ```
