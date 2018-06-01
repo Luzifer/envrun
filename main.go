@@ -76,7 +76,7 @@ func main() {
 			if err != nil {
 				log.WithError(err).Fatal("Unable to read password from file")
 			}
-			cfg.Password = string(data)
+			cfg.Password = strings.TrimSpace(string(data))
 		}
 	}
 
