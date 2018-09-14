@@ -82,10 +82,8 @@ INFO[0000] Process exitted with code 0
 
 ### OpenSSL AES256 encryption
 
-Pay attention on the `-md md5` flag: OpenSSL 1.1.0f and newer uses an incompatible hasing algorithm for the passwords!
-
 ```console
-$ echo 'MYVAR=myvalue' | openssl enc -e -aes-256-cbc -pass pass:justatest -md md5 -base64 -out .env
+$ echo 'MYVAR=myvalue' | openssl enc -e -aes-256-cbc -pass pass:justatest -base64 -out .env
 
 $ cat .env
 U2FsdGVkX18xcVIMejjwWzh1DppzptJCHhORH/JDj10=
