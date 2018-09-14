@@ -1,3 +1,9 @@
+# 0.5.0 / 2018-09-14
+
+  * Update dependencies
+    * Adds OpenSSL >=1.1.0c support
+  * Update README
+
 # 0.4.2 / 2018-06-01
 
   * Fix: Report gpg-symmetric encryption in help
