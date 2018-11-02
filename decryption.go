@@ -6,9 +6,10 @@ import (
 	"io"
 	"io/ioutil"
 
-	openssl "github.com/Luzifer/go-openssl"
 	"golang.org/x/crypto/openpgp"
 	"golang.org/x/crypto/openpgp/armor"
+
+	openssl "github.com/Luzifer/go-openssl"
 )
 
 type decryptMethod func(body []byte, passphrase string) ([]byte, error)
@@ -20,7 +21,10 @@ func decryptMethodFromName(name string) (decryptMethod, error) {
 		return decryptGPGSymmetric, nil
 
 	case "openssl-md5":
-		return decryptOpenSSLMD5, nil
+		return decryptOpenSSL(openssl.DigestMD5Sum), nil
+
+	case "openssl-sha256":
+		return decryptOpenSSL(openssl.DigestSHA256Sum), nil
 
 	default:
 		return nil, fmt.Errorf("Decrypt method %q not found", name)
@@ -56,6 +60,8 @@ func decryptGPGSymmetric(body []byte, passphrase string) ([]byte, error) {
 	return ioutil.ReadAll(md.UnverifiedBody)
 }
 
-func decryptOpenSSLMD5(body []byte, passphrase string) ([]byte, error) {
-	return openssl.New().DecryptString(cfg.Password, string(body))
+func decryptOpenSSL(kdf openssl.DigestFunc) decryptMethod {
+	return func(body []byte, passphrase string) ([]byte, error) {
+		return openssl.New().DecryptBytes(cfg.Password, body, kdf)
+	}
 }

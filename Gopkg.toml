@@ -26,6 +26,10 @@
 
 
 [[constraint]]
+  name = "github.com/Luzifer/go-openssl"
+  version = "3.0.0"
+
+[[constraint]]
   name = "github.com/Luzifer/rconfig"
   version = "1.1.0"
 

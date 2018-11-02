@@ -7,14 +7,15 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/Luzifer/rconfig"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/Luzifer/rconfig"
 )
 
 var (
 	cfg = struct {
 		CleanEnv         bool   `flag:"clean" default:"false" description:"Do not pass current environment to child process"`
-		EncryptionMethod string `flag:"encryption" default:"openssl-md5" description:"Encryption method used for encrypted env-file (Available: gpg-symmetric, openssl-md5)"`
+		EncryptionMethod string `flag:"encryption" default:"openssl-md5" description:"Encryption method used for encrypted env-file (Available: gpg-symmetric, openssl-md5, openssl-sha256)"`
 		EnvFile          string `flag:"env-file" default:".env" description:"Location of the environment file"`
 		LogLevel         string `flag:"log-level" default:"info" description:"Log level (debug, info, warn, error, fatal)"`
 		PasswordFile     string `flag:"password-file" default:"" description:"Read encryption key from file"`
