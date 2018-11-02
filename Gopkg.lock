@@ -2,12 +2,12 @@
 
 
 [[projects]]
-  digest = "1:28a69515688ce64861e59fdb60d925854f87cddf078e04881191c71b804c5b47"
+  digest = "1:d1eed0842775a598d79fa92fb7bae782d0077c27daa315845aaee8a823b83cbc"
   name = "github.com/Luzifer/go-openssl"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "b3de9a97f19362b45eb2e2597960afcd58569cea"
-  version = "v2.0.0"
+  revision = "2e082a23aef0698233d3520f1718276da3460361"
+  version = "v3.0.0"
 
 [[projects]]
   digest = "1:6503b55a93848f2365ab2715ed64ec47ff245026668a0c5409807a347e0f6568"
@@ -18,24 +18,32 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:b2339e83ce9b5c4f79405f949429a7f68a9a904fed903c672aac1e7ceb7f5f02"
+  digest = "1:4059c14e87a2de3a434430340521b5feece186c1469eff0834c29a63870de3ed"
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
+  version = "v1.0.1"
+
+[[projects]]
+  digest = "1:d848e2bdc690ea54c4b49894b67a05db318a97ee6561879b814c2c1f82f61406"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "3e01752db0189b9157070a0e1668a620f9a85da2"
-  version = "v1.0.6"
+  revision = "bcd833dfe83d3cebad139e4a29ed79cb2318bf95"
+  version = "v1.2.0"
 
 [[projects]]
-  digest = "1:e3707aeaccd2adc89eba6c062fec72116fe1fc1ba71097da85b4d8ae1668a675"
+  digest = "1:9d8420bbf131d1618bde6530af37c3799340d3762cc47210c1d9532a4c3a2779"
   name = "github.com/spf13/pflag"
   packages = ["."]
   pruneopts = "NUT"
-  revision = "9a97c102cda95a86cec2345a6f09f55a939babf5"
-  version = "v1.0.2"
+  revision = "298182f68c66c05229eb03ac171abe6e309ee79a"
+  version = "v1.0.3"
 
 [[projects]]
   branch = "master"
-  digest = "1:63694b74286e7b4589ca54b9a126a8bcd739ad062fa30013245d0c30fdb4c377"
+  digest = "1:18236c5bb3baa556d984c0dfed68dc9963bfb14991c6aaf815ae58ec37dd7b1f"
   name = "golang.org/x/crypto"
   packages = [
     "cast5",
@@ -48,18 +56,18 @@
     "ssh/terminal",
   ]
   pruneopts = "NUT"
-  revision = "0e37d006457bf46f9e6692014ba72ef82c33022c"
+  revision = "4d3f4d9ffa16a13f451c3b2999e9c49e9750bf06"
 
 [[projects]]
   branch = "master"
-  digest = "1:581828cee9f0d31195c1ae52ea8935dfaec395cee6c23adc02109b892b391c2e"
+  digest = "1:3bcf6eb3757db3e22c41d212f886b86d0f940f86e1af85b13cd31122ac341193"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "NUT"
-  revision = "d0be0721c37eeb5299f245a996a483160fc36940"
+  revision = "9b800f95dbbc54abff0acf7ee32d88ba4e328c89"
 
 [[projects]]
   branch = "v2"
