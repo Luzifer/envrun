@@ -1,3 +1,8 @@
+# 0.6.0 / 2018-11-02
+
+  * Update dependencies
+  * Update OpenSSL library, add CLI support for openssl-sha256
+
 # 0.5.0 / 2018-09-14
 
   * Update dependencies
