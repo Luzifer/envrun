@@ -100,6 +100,10 @@ func main() {
 		childenv[k] = v
 	}
 
+	if len(rconfig.Args()) < 2 {
+		log.Fatal("No command specified")
+	}
+
 	c := exec.Command(rconfig.Args()[1], rconfig.Args()[2:]...)
 	c.Env = envMapToList(childenv)
 	c.Stdout = os.Stdout
