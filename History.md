@@ -1,3 +1,9 @@
+# 0.6.1 / 2019-08-04
+
+  * Fix: Add check for missing command arguments
+  * Add go module support, update dependencies
+  * Remove old vendoring
+
 # 0.6.0 / 2018-11-02
 
   * Update dependencies
