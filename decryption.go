@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/openpgp"
 	"golang.org/x/crypto/openpgp/armor"
 
-	openssl "github.com/Luzifer/go-openssl"
+	openssl "github.com/Luzifer/go-openssl/v3"
 )
 
 type decryptMethod func(body []byte, passphrase string) ([]byte, error)
