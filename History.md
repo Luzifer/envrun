@@ -1,3 +1,7 @@
+# 0.6.2 / 2020-02-13
+
+  * Fix: Panic on invalid entries in env-file
+
 # 0.6.1 / 2019-08-04
 
   * Fix: Add check for missing command arguments
