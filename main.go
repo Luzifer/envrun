@@ -57,6 +57,10 @@ func envListToMap(list []string) map[string]string {
 		}
 
 		parts := strings.SplitN(entry, "=", 2)
+		if len(parts) != 2 {
+			log.WithField("entry", entry).Warn("Invalid env-file entry")
+			continue
+		}
 		out[parts[0]] = parts[1]
 	}
 	return out
