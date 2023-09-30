@@ -1,3 +1,8 @@
+# 0.7.0 / 2023-09-30
+
+  * Update dependencies, fix linter errors
+  * Replace repo-runner CI
+
 # 0.6.2 / 2020-02-13
 
   * Fix: Panic on invalid entries in env-file
