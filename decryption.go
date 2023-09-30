@@ -4,30 +4,28 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 
-	"golang.org/x/crypto/openpgp"
-	"golang.org/x/crypto/openpgp/armor"
+	"github.com/ProtonMail/go-crypto/openpgp"
+	"github.com/ProtonMail/go-crypto/openpgp/armor"
 
-	openssl "github.com/Luzifer/go-openssl/v3"
+	openssl "github.com/Luzifer/go-openssl/v4"
 )
 
 type decryptMethod func(body []byte, passphrase string) ([]byte, error)
 
 func decryptMethodFromName(name string) (decryptMethod, error) {
 	switch name {
-
 	case "gpg-symmetric":
 		return decryptGPGSymmetric, nil
 
 	case "openssl-md5":
-		return decryptOpenSSL(openssl.DigestMD5Sum), nil
+		return decryptOpenSSL(openssl.BytesToKeyMD5), nil
 
 	case "openssl-sha256":
-		return decryptOpenSSL(openssl.DigestSHA256Sum), nil
+		return decryptOpenSSL(openssl.BytesToKeySHA256), nil
 
 	default:
-		return nil, fmt.Errorf("Decrypt method %q not found", name)
+		return nil, fmt.Errorf("decrypt method %q not found", name)
 	}
 }
 
@@ -41,27 +39,29 @@ func decryptGPGSymmetric(body []byte, passphrase string) ([]byte, error) {
 	case io.EOF:
 		msgReader = bytes.NewReader(body)
 	default:
-		return nil, fmt.Errorf("Unable to read armor: %s", err)
+		return nil, fmt.Errorf("reading armor: %w", err)
 	}
 
 	var passwordRetry bool
 	md, err := openpgp.ReadMessage(msgReader, nil, func(keys []openpgp.Key, symmetric bool) ([]byte, error) {
 		if passwordRetry {
-			return nil, fmt.Errorf("Wrong passphrase supplied")
+			return nil, fmt.Errorf("wrong passphrase supplied")
 		}
 
 		passwordRetry = true
 		return []byte(passphrase), nil
 	}, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to decrypt message: %s", err)
+		return nil, fmt.Errorf("decrypting message: %w", err)
 	}
 
-	return ioutil.ReadAll(md.UnverifiedBody)
+	data, err := io.ReadAll(md.UnverifiedBody)
+	return data, fmt.Errorf("reading GPG body: %w", err)
 }
 
-func decryptOpenSSL(kdf openssl.DigestFunc) decryptMethod {
+func decryptOpenSSL(kdf openssl.CredsGenerator) decryptMethod {
 	return func(body []byte, passphrase string) ([]byte, error) {
-		return openssl.New().DecryptBytes(cfg.Password, body, kdf)
+		data, err := openssl.New().DecryptBytes(cfg.Password, body, kdf)
+		return data, fmt.Errorf("decrypting data: %w", err)
 	}
 }

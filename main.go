@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/Luzifer/go_helpers/v2/env"
 	"github.com/Luzifer/rconfig/v2"
 )
 
@@ -20,64 +20,41 @@ var (
 		LogLevel         string `flag:"log-level" default:"info" description:"Log level (debug, info, warn, error, fatal)"`
 		PasswordFile     string `flag:"password-file" default:"" description:"Read encryption key from file"`
 		Password         string `flag:"password,p" default:"" env:"PASSWORD" description:"Password to decrypt environment file"`
-		Silent           bool   `flag:"q" default:"false" description:"Suppress informational messages from envrun (DEPRECATED, use --log-level=warn)"`
 		VersionAndExit   bool   `flag:"version" default:"false" description:"Prints current version and exits"`
 	}{}
 
 	version = "dev"
 )
 
-func init() {
+func initApp() error {
 	if err := rconfig.ParseAndValidate(&cfg); err != nil {
-		log.Fatalf("Unable to parse commandline options: %s", err)
+		return fmt.Errorf("parsing cli options: %w", err)
 	}
 
-	if cfg.VersionAndExit {
-		fmt.Printf("envrun %s\n", version)
-		os.Exit(0)
+	l, err := log.ParseLevel(cfg.LogLevel)
+	if err != nil {
+		return fmt.Errorf("parsing log-level: %w", err)
 	}
+	log.SetLevel(l)
 
-	if cfg.Silent && cfg.LogLevel == "info" {
-		// Migration of deprecated flag
-		cfg.LogLevel = "warn"
-	}
-
-	if l, err := log.ParseLevel(cfg.LogLevel); err != nil {
-		log.WithError(err).Fatal("Unable to parse log level")
-	} else {
-		log.SetLevel(l)
-	}
-}
-
-func envListToMap(list []string) map[string]string {
-	out := map[string]string{}
-	for _, entry := range list {
-		if len(entry) == 0 || entry[0] == '#' {
-			continue
-		}
-
-		parts := strings.SplitN(entry, "=", 2)
-		if len(parts) != 2 {
-			log.WithField("entry", entry).Warn("Invalid env-file entry")
-			continue
-		}
-		out[parts[0]] = parts[1]
-	}
-	return out
-}
-
-func envMapToList(envMap map[string]string) []string {
-	out := []string{}
-	for k, v := range envMap {
-		out = append(out, k+"="+v)
-	}
-	return out
+	return nil
 }
 
 func main() {
+	var err error
+
+	if err = initApp(); err != nil {
+		log.WithError(err).Fatal("intitializing app")
+	}
+
+	if cfg.VersionAndExit {
+		fmt.Printf("envrun %s\n", version) //nolint:forbidigo
+		os.Exit(0)
+	}
+
 	if cfg.Password == "" && cfg.PasswordFile != "" {
 		if _, err := os.Stat(cfg.PasswordFile); err == nil {
-			data, err := ioutil.ReadFile(cfg.PasswordFile)
+			data, err := os.ReadFile(cfg.PasswordFile)
 			if err != nil {
 				log.WithError(err).Fatal("Unable to read password from file")
 			}
@@ -95,7 +72,7 @@ func main() {
 		log.WithError(err).Fatal("Could not load env file")
 	}
 
-	var childenv = envListToMap(os.Environ())
+	childenv := env.ListToMap(os.Environ())
 	if cfg.CleanEnv {
 		childenv = map[string]string{}
 	}
@@ -104,12 +81,12 @@ func main() {
 		childenv[k] = v
 	}
 
-	if len(rconfig.Args()) < 2 {
+	if len(rconfig.Args()) < 2 { //nolint:gomnd
 		log.Fatal("No command specified")
 	}
 
-	c := exec.Command(rconfig.Args()[1], rconfig.Args()[2:]...)
-	c.Env = envMapToList(childenv)
+	c := exec.Command(rconfig.Args()[1], rconfig.Args()[2:]...) //#nosec:G204 // Intended to run cmd from input
+	c.Env = env.MapToList(childenv)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Stdin = os.Stdin
@@ -125,21 +102,21 @@ func main() {
 		os.Exit(1)
 	default:
 		log.WithError(err).Error("An unknown error occurred")
-		os.Exit(2)
+		os.Exit(2) //nolint:gomnd
 	}
 }
 
 func loadEnvFromFile(filename, passphrase string, decrypt decryptMethod) (map[string]string, error) {
-	body, err := ioutil.ReadFile(filename)
+	body, err := os.ReadFile(filename) //#nosec:G304 // Intended to read a variable env file
 	if err != nil {
-		return nil, fmt.Errorf("Could not read env-file: %s", err)
+		return nil, fmt.Errorf("reading env-file: %w", err)
 	}
 
 	if passphrase != "" {
 		if body, err = decrypt(body, passphrase); err != nil {
-			return nil, fmt.Errorf("Could not decrypt env-file: %s", err)
+			return nil, fmt.Errorf("decrypting env-file: %w", err)
 		}
 	}
 
-	return envListToMap(strings.Split(string(body), "\n")), nil
+	return env.ListToMap(strings.Split(string(body), "\n")), nil
 }
