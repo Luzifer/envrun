@@ -1,3 +1,8 @@
+# 0.7.1 / 2023-11-04
+
+  * Update dependencies
+  * Fix: `fmt.Errorf` behaves different than `errors.Wrap`
+
 # 0.7.0 / 2023-09-30
 
   * Update dependencies, fix linter errors
