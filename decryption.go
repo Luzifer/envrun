@@ -56,12 +56,18 @@ func decryptGPGSymmetric(body []byte, passphrase string) ([]byte, error) {
 	}
 
 	data, err := io.ReadAll(md.UnverifiedBody)
-	return data, fmt.Errorf("reading GPG body: %w", err)
+	if err != nil {
+		return nil, fmt.Errorf("reading GPG body: %w", err)
+	}
+	return data, nil
 }
 
 func decryptOpenSSL(kdf openssl.CredsGenerator) decryptMethod {
 	return func(body []byte, passphrase string) ([]byte, error) {
 		data, err := openssl.New().DecryptBytes(cfg.Password, body, kdf)
-		return data, fmt.Errorf("decrypting data: %w", err)
+		if err != nil {
+			return nil, fmt.Errorf("decrypting data: %w", err)
+		}
+		return data, nil
 	}
 }
