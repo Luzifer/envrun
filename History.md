@@ -1,3 +1,10 @@
+# 0.7.6 / 2026-08-24
+
+> [!IMPORTANT]
+> This release changes the filenames inside the archives. Previously you had `envrun_linux_amd64`, now each archive only contains the `envrun` binary (no more appended OS and ARCH).
+
+  * chore: replace old build-system
+
 # 0.7.5 / 2026-08-24
 
   * chore: update dependencies, replace go_helpers/v2 module
