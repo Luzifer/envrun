@@ -1,15 +1,17 @@
+// EnvRun Util
 package main
 
 import (
+	"context"
 	"fmt"
+	"maps"
 	"os"
 	"os/exec"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/Luzifer/go_helpers/v2/env"
 	"github.com/Luzifer/rconfig/v2"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -31,11 +33,11 @@ func initApp() error {
 		return fmt.Errorf("parsing cli options: %w", err)
 	}
 
-	l, err := log.ParseLevel(cfg.LogLevel)
+	l, err := logrus.ParseLevel(cfg.LogLevel)
 	if err != nil {
 		return fmt.Errorf("parsing log-level: %w", err)
 	}
-	log.SetLevel(l)
+	logrus.SetLevel(l)
 
 	return nil
 }
@@ -44,11 +46,11 @@ func main() {
 	var err error
 
 	if err = initApp(); err != nil {
-		log.WithError(err).Fatal("intitializing app")
+		logrus.WithError(err).Fatal("intitializing app")
 	}
 
 	if cfg.VersionAndExit {
-		fmt.Printf("envrun %s\n", version) //nolint:forbidigo
+		fmt.Printf("envrun %s\n", version) //nolint:forbidigo // fine to print version
 		os.Exit(0)
 	}
 
@@ -56,7 +58,7 @@ func main() {
 		if _, err := os.Stat(cfg.PasswordFile); err == nil {
 			data, err := os.ReadFile(cfg.PasswordFile)
 			if err != nil {
-				log.WithError(err).Fatal("Unable to read password from file")
+				logrus.WithError(err).Fatal("Unable to read password from file")
 			}
 			cfg.Password = strings.TrimSpace(string(data))
 		}
@@ -64,28 +66,26 @@ func main() {
 
 	dec, err := decryptMethodFromName(cfg.EncryptionMethod)
 	if err != nil {
-		log.WithError(err).Fatal("Could not load decrypt method")
+		logrus.WithError(err).Fatal("Could not load decrypt method")
 	}
 
 	pairs, err := loadEnvFromFile(cfg.EnvFile, cfg.Password, dec)
 	if err != nil {
-		log.WithError(err).Fatal("Could not load env file")
+		logrus.WithError(err).Fatal("Could not load env file")
 	}
 
 	childenv := env.ListToMap(os.Environ())
 	if cfg.CleanEnv {
-		childenv = map[string]string{}
+		childenv = make(map[string]string)
 	}
 
-	for k, v := range pairs {
-		childenv[k] = v
+	maps.Copy(childenv, pairs)
+
+	if len(rconfig.Args()) < 2 {
+		logrus.Fatal("No command specified")
 	}
 
-	if len(rconfig.Args()) < 2 { //nolint:gomnd
-		log.Fatal("No command specified")
-	}
-
-	c := exec.Command(rconfig.Args()[1], rconfig.Args()[2:]...) //#nosec:G204 // Intended to run cmd from input
+	c := exec.CommandContext(context.TODO(), rconfig.Args()[1], rconfig.Args()[2:]...) //#nosec:G204 // Intended to run cmd from input
 	c.Env = env.MapToList(childenv)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
@@ -95,14 +95,14 @@ func main() {
 
 	switch err.(type) {
 	case nil:
-		log.Info("Process exitted with code 0")
+		logrus.Info("Process exitted with code 0")
 		os.Exit(0)
 	case *exec.ExitError:
-		log.Error("Unclean exit with exit-code != 0")
+		logrus.Error("Unclean exit with exit-code != 0")
 		os.Exit(1)
 	default:
-		log.WithError(err).Error("An unknown error occurred")
-		os.Exit(2) //nolint:gomnd
+		logrus.WithError(err).Error("An unknown error occurred")
+		os.Exit(2)
 	}
 }
 
