@@ -9,7 +9,7 @@ require (
 	github.com/Luzifer/go_helpers/v2 v2.25.0
 	github.com/Luzifer/rconfig/v2 v2.6.2
 	github.com/ProtonMail/go-crypto v1.1.3
-	github.com/sirupsen/logrus v1.9.3
+	github.com/sirupsen/logrus v1.10.1
 )
 
 require (
