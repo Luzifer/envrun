@@ -1,7 +1,6 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/Luzifer/envrun)](https://goreportcard.com/report/github.com/Luzifer/envrun)
-![](https://badges.fyi/github/license/Luzifer/envrun)
-![](https://badges.fyi/github/downloads/Luzifer/envrun)
-![](https://badges.fyi/github/latest-release/Luzifer/envrun)
+![](https://img.shields.io/github/license/Luzifer/envrun)
+![](https://img.shields.io/github/downloads/Luzifer/envrun/total)
+![](https://img.shields.io/github/v/release/Luzifer/envrun)
 
 # Luzifer / envrun
 
@@ -17,7 +16,7 @@ To visualize the effect of the utility the test command is `python test.py` with
 import os
 
 for k in os.environ.keys():
-  print "{} = {}".format(k, os.environ[k])
+  print("{} = {}".format(k, os.environ[k]))
 ```
 
 It just prints the current environment to `STDOUT` and exits.
@@ -82,12 +81,12 @@ INFO[0000] Process exitted with code 0
 ### OpenSSL AES256 encryption
 
 ```console
-$ echo 'MYVAR=myvalue' | openssl enc -e -aes-256-cbc -pass pass:justatest -base64 -out .env
+$ echo 'MYVAR=myvalue' | openssl enc -e -aes-256-cbc -md sha256 -pass pass:justatest -base64 -out .env
 
 $ cat .env
-U2FsdGVkX18xcVIMejjwWzh1DppzptJCHhORH/JDj10=
+U2FsdGVkX18rywsKLPVPr0htv2ovRFL6na8cWEl4PRI=
 
-$ envrun -p justatest --clean -- env
+$ envrun -p justatest --encryption openssl-sha256 --clean -- env
 MYVAR=myvalue
 INFO[0000] Process exitted with code 0
 ```
