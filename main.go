@@ -9,7 +9,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/Luzifer/go_helpers/v2/env"
+	"github.com/Luzifer/go_helpers/env"
 	"github.com/Luzifer/rconfig/v2"
 	"github.com/sirupsen/logrus"
 )
