@@ -1,3 +1,10 @@
+# 0.7.5 / 2026-08-24
+
+  * chore: update dependencies, replace go_helpers/v2 module
+  * fix(deps): update module github.com/luzifer/go-openssl/v4 to v4.2.5 (#2)
+  * fix(deps): update module github.com/luzifer/rconfig/v2 to v2.6.2 (#4)
+  * fix(deps): update module github.com/sirupsen/logrus to v1.10.1 (#6)
+
 # 0.7.4 / 2024-12-12
 
   * Update Go dependencies
