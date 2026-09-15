@@ -6,7 +6,7 @@ toolchain go1.27.1
 
 require (
 	github.com/Luzifer/go-openssl/v4 v4.2.5
-	github.com/Luzifer/go_helpers/env v0.5.2
+	github.com/Luzifer/go_helpers/env v0.5.4
 	github.com/Luzifer/rconfig/v2 v2.6.2
 	github.com/ProtonMail/go-crypto v1.4.1
 	github.com/sirupsen/logrus v1.10.2
