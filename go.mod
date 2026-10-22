@@ -2,7 +2,7 @@ module github.com/Luzifer/envrun
 
 go 1.26.0
 
-toolchain go1.27.2
+toolchain go1.27.3
 
 require (
 	github.com/Luzifer/go-openssl/v4 v4.2.5
