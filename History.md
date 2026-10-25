@@ -1,3 +1,9 @@
+# 0.7.7 / 2026-10-25
+
+  * fix(deps): update module github.com/luzifer/go_helpers/env to v0.5.4 (#11)
+  * fix(deps): update module github.com/protonmail/go-crypto to v1.5.2 (#14)
+  * fix(deps): update module github.com/sirupsen/logrus to v1.10.2 (#9)
+
 # 0.7.6 / 2026-08-24
 
 > [!IMPORTANT]
